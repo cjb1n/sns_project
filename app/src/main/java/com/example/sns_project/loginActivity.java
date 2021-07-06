@@ -15,7 +15,7 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class SignUpActivity extends AppCompatActivity {
+public class loginActivity extends AppCompatActivity {
 
     private static final String TAG = "SignUpActivity";
     private FirebaseAuth mAuth;
@@ -24,13 +24,12 @@ public class SignUpActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sign_up);
+        setContentView(R.layout.activity_lognin);
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
-        findViewById(R.id.signupbotton).setOnClickListener(onClickListener);
-        findViewById(R.id.gotologinbotton).setOnClickListener(onClickListener);
+        findViewById(R.id.loginbotton).setOnClickListener(onClickListener);
     }
 
     @Override
@@ -48,12 +47,8 @@ public class SignUpActivity extends AppCompatActivity {
         @Override
         public void onClick(View v) {
             switch (v.getId()){
-                case R.id.signupbotton:
+                case R.id.loginbotton:
                     signup();
-                    break;
-
-                case R.id.gotologinbotton:
-                    startloginactivity();
                     break;
             }
         }
@@ -61,29 +56,23 @@ public class SignUpActivity extends AppCompatActivity {
     private void signup(){
         String email = ((EditText)findViewById(R.id.emailEditText)).getText().toString();
         String password = ((EditText)findViewById(R.id.passwordEditText)).getText().toString();
-        String passwordcheck = ((EditText)findViewById(R.id.passwordcheckEditText)).getText().toString();
 
-        if(email.length() > 0 && password.length() >0 && passwordcheck.length() > 0){
-            if (password.equals(passwordcheck)){
-                mAuth.createUserWithEmailAndPassword(email, password)
-                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    FirebaseUser user = mAuth.getCurrentUser();
-                                    starttoast("회원가입에 성공하였습니다.");
-                                } else {
-                                    if (task.getException() != null) {
-                                        starttoast(task.getException().toString());
-
-                                    }
+        if(email.length() > 0 && password.length() >0){
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                FirebaseUser user = mAuth.getCurrentUser();
+                                starttoast("로그인에 성공하였습니다.");
+                                startMainactivity();
+                            } else {
+                                if (task.getException() != null) {
+                                    starttoast(task.getException().toString());
                                 }
                             }
-                        });
-
-            }else{
-                starttoast("비밀번호가 일치하지 않습니다.");
-            }
+                        }
+                    });
         }else{
             starttoast("이메일 또는 비밀번호를 입력해주세요");
         }
@@ -92,8 +81,8 @@ public class SignUpActivity extends AppCompatActivity {
         Toast.makeText(this, msg , Toast.LENGTH_SHORT).show();
     }
 
-    private  void  startloginactivity(){
-        Intent intent=new Intent(this,loginActivity.class);
+    private  void  startMainactivity(){
+        Intent intent=new Intent(this,MainActivity.class);
         startActivity(intent);
     }
 }
